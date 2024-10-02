@@ -6,7 +6,7 @@
 - Each line is only read up to the first whitespace; entire lines can also be commented using //.
 - Each line which is not entirely whitespace or begins with a comment contains a rule.
 - Each rule lists a public suffix, with the subdomain portions separated by dots (.) as usual. There is no leading dot.
-- The wildcard character _ (asterisk, specifically ```U+002A _ 2a ASTERISK```) matches any valid sequence of characters in a hostname part. Wildcards in the PSL follow the syntax defined in [RFC1034](https://tools.ietf.org/html/rfc1034), section 4.3.3 (pp24-25), and are restricted to appear only in the leftmost position and must wildcard an entire label.
+- The wildcard character * (asterisk, specifically ```U+002A * 2a ASTERISK```) matches any valid sequence of characters in a hostname part. Wildcards in the PSL follow the syntax defined in [RFC1034](https://tools.ietf.org/html/rfc1034), section 4.3.3 (pp24-25), and are restricted to appear only in the leftmost position and must wildcard an entire label.
 - If a hostname matches more than one rule in the file, the longest matching rule (the one with the most levels) will be used.
 - An exclamation mark (!) at the start of a rule marks an exception to a previous wildcard rule. An exception rule takes priority over any other matching rule.
 - The list uses **Unicode, not Punycode** forms on strings, and the **file is encoded using UTF-8**.
