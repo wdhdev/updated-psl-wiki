@@ -74,7 +74,7 @@ Our non-acceptance (wontfix) criteria are as follows:
 
 * We do not accept entries for use as DNS wildcards, such that e.g. 1-2-3-4.foo.tld resolves as IP address 1.2.3.4. This basically projects the security properties of the IP address space onto the domain name space, and we don't feel that is safe. IP addresses can be dynamically allocated to multiple mutually-untrusting parties; domain names generally are not.
 
-* We do not accept entries whose sole purpose is to circumvent rate limits of third parties (such as Let's Encrypt rate limits - use their [form](https://Let's Encrypt.org/docs/rate-limits/) instead).
+* We do not accept entries whose sole purpose is to circumvent rate limits of third parties (such as Let's Encrypt rate limits - use their [form](https://letsencrypt.org/docs/rate-limits/) instead).
 
 * We do not accept entries that have the objective of getting around limitations that have been put in place by a vendor to protect internet users. The PSL is not a 'workaround', and Pull Requests that appear to be doing this should expect to be declined. Be thorough and candid with the rationale furnished with the request.
 
