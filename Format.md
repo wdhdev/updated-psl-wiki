@@ -1,43 +1,43 @@
 # Format
 
-
 ## Entry Specification
 
 - The list is a set of rules, with one rule per line.
 - Each line is only read up to the first whitespace; entire lines can also be commented using //.
 - Each line which is not entirely whitespace or begins with a comment contains a rule.
 - Each rule lists a public suffix, with the subdomain portions separated by dots (.) as usual. There is no leading dot.
-- The wildcard character * (asterisk, Specifically ```U+002A	*	2a	ASTERISK```) matches any valid sequence of characters in a hostname part. Wildcards in the PSL follow the syntax defined in [RFC1034](https://tools.ietf.org/html/rfc1034), section 4.3.3 (pp24-25), and are restricted to appear only in the leftmost position and must wildcard an entire label.
+- The wildcard character _ (asterisk, specifically ```U+002A _ 2a ASTERISK```) matches any valid sequence of characters in a hostname part. Wildcards in the PSL follow the syntax defined in [RFC1034](https://tools.ietf.org/html/rfc1034), section 4.3.3 (pp24-25), and are restricted to appear only in the leftmost position and must wildcard an entire label.
 - If a hostname matches more than one rule in the file, the longest matching rule (the one with the most levels) will be used.
 - An exclamation mark (!) at the start of a rule marks an exception to a previous wildcard rule. An exception rule takes priority over any other matching rule.
-- The list uses **Unicode, not Punycode** forms on strings, and the **file is encoded using UTF-8**. 
+- The list uses **Unicode, not Punycode** forms on strings, and the **file is encoded using UTF-8**.
 - **Entries should not have trailing whitespace**
 
-The following characters are used explicitly, **_please only use these and avoid Unicode variants of the following_**: 
-  - Space `" "` (Dec/Hex: 32/20), 
-  - Exclamation `"!"` (Dec/Hex: 33/21), 
-  - Forward Slash `"/"` (Dec/Hex: 47/2F), 
-  - Period/Dot `"."` (Dec/Hex: 46/2E), and 
-  - Asterisk `"*"` (Dec/Hex: 42/2A).  
-  - **When in doubt, for the above characters, only use the ASCII characters between Dec/Hex 32/20 and 126/7E**
-  - For header lines, material after the dual slashes is more forgiving as it is comment-based, but only use the standard `"@"` in email addresses, please.
+The following characters are used explicitly, **_please only use these and avoid Unicode variants of the following_**:
 
-**Examples of valid entries and ! or * / wildcard usage:**
+- Space `" "` (Dec/Hex: 32/20),
+- Exclamation `"!"` (Dec/Hex: 33/21),
+- Forward Slash `"/"` (Dec/Hex: 47/2F),
+- Period/Dot `"."` (Dec/Hex: 46/2E), and
+- Asterisk `"*"` (Dec/Hex: 42/2A).
+- **When in doubt, for the above characters, only use the ASCII characters between Dec/Hex 32/20 and 126/7E**
+- For header lines, material after the dual slashes is more forgiving as it is comment-based, but only use the standard `"@"` in email addresses, please.
+
+**Examples of valid entries and ! or \* / wildcard usage:**
 |Entry|Valid/Invalid|Why|
 |-----|-----|-----|
-|*.foo|Valid|Correct Use of Wildcard|
+|\*.foo|Valid|Correct Use of Wildcard|
 |!specificsite.foo|Valid|Correct use of Exclamation to indicate exception to previous wildcard rule|
-|*.bar.foo|Valid|Correct Use of Wildcard|
-|*.예|Valid|Correct Use of Wildcard|
-|*.예.예|Valid|Correct Use of Wildcard|
+|\*.bar.foo|Valid|Correct Use of Wildcard|
+|\*.예|Valid|Correct Use of Wildcard|
+|\*.예.예|Valid|Correct Use of Wildcard|
 
-**Examples of invalid entries and ! or * / wildcard usage:**
+**Examples of invalid entries and ! or \* / wildcard usage:**
 |Entry|Valid/Invalid|Why|
 |-----|-----|-----|
 |\*.\*.bar.foo|Invalid|Multiple Wildcard|
 |bar.*.foo|Invalid|Nested Wildcard (must be in leftmost position, only)|
 |*bar.foo|Invalid|Wildcard Non-delimited by dot|
-|예.*.foo|Invalid|Nested Wildcard|
+|예.\*.foo|Invalid|Nested Wildcard|
 |ǃspecificsite.예.예|Invalid|Used latin letter retroflex click unicode char (01C3) instead of exclamation (33)|
 
 ## Right-to-left sorting
@@ -66,6 +66,7 @@ puts output.join("\n")
 ```
 
 and the same in Python
+
 ```python
 #!/usr/bin/env python3
 
@@ -83,73 +84,86 @@ $ cat file.txt | psl-sort
 ```
 
 ## Example
+
 Here is an example (incomplete) list section. The rules are numbered, but the numbers would not appear in the real file:
 
-            1. com
-            2. *.foo.com
-            3. *.jp
-            // Hosts in .hokkaido.jp can't set cookies below level 4...
-            4. *.hokkaido.jp
-            5. *.tokyo.jp
-            // ...except hosts in pref.hokkaido.jp, which can set cookies at level 3.
-            6. !pref.hokkaido.jp
-            7. !metro.tokyo.jp
-        
+1. com
+2. *.foo.com
+3. *.jp
+// Hosts in .hokkaido.jp can't set cookies below level 4...
+4. *.hokkaido.jp
+5. *.tokyo.jp
+// ...except hosts in pref.hokkaido.jp, which can set cookies at level 3.
+6. !pref.hokkaido.jp
+7. !metro.tokyo.jp
+
+
 The example above would be interpreted as follows, in the case of cookie-setting, and using "foo" and "bar" as generic hostnames:
 
 1:
-* Cookies **may** be set for foo.com.
+
+- Cookies **may** be set for foo.com.
 
 (WARNING: Many libraries interpret `*.foo.com` as implying `foo.com`. So this would behave differently. See: https://github.com/publicsuffix/list/issues/694)
 
 2:
-* Cookies may not be set for bar.foo.com.
-* Cookies **may** be set for example.bar.foo.com.
+
+- Cookies may not be set for bar.foo.com.
+- Cookies **may** be set for example.bar.foo.com.
 
 3:
-* Cookies **may** be set for foo.bar.jp.
-* Cookies **_may not_** be set for bar.jp.
+
+- Cookies **may** be set for foo.bar.jp.
+- Cookies **_may not_** be set for bar.jp.
 
 4:
-* Cookies **may** be set for foo.bar.hokkaido.jp.
-* Cookies **_may not_** be set for bar.hokkaido.jp.
+
+- Cookies **may** be set for foo.bar.hokkaido.jp.
+- Cookies **_may not_** be set for bar.hokkaido.jp.
 
 5:
-* Cookies **may** be set for foo.bar.tokyo.jp.
-* Cookies **_may not_** be set for bar.tokyo.jp.
+
+- Cookies **may** be set for foo.bar.tokyo.jp.
+- Cookies **_may not_** be set for bar.tokyo.jp.
 
 6:
-* Cookies **may** be set for pref.hokkaido.jp because the exception overrides the previous rule.
+
+- Cookies **may** be set for pref.hokkaido.jp because the exception overrides the previous rule.
 
 7:
-* Cookies **may** be set for metro.tokyo.jp, because the exception overrides the previous rule.
+
+- Cookies **may** be set for metro.tokyo.jp, because the exception overrides the previous rule.
 
 ## Formal algorithm
+
 Here is an algorithm for determining the Public Suffix of a domain. (Note: it may not be the most efficient algorithm.) The domain, as well as all rules from the Public Suffix List, must be canonicalized in the normal way for hostnames - lower-case, Punycode (RFC 3492) - prior to being compared.
 
 ## Definitions
-* The Public Suffix List consists of a series of lines, separated by \n.
-* Each line is only read up to the first whitespace; entire lines can also be commented using //.
-* Each line which is not entirely whitespace or begins with a comment contains a rule.
-* A rule may begin with a "!" (exclamation mark). If it does, it is labelled as a "exception rule" and then treated as if the exclamation mark is not present.
-* A domain or rule can be split into a list of labels using the separator "." (dot). The separator is not part of any of the labels. Empty labels are not permitted, meaning that leading and trailing dots are ignored.
-* A domain is said to match a rule if and only if all of the following conditions are met:
-* When the domain and rule are split into corresponding labels, that the domain contains as many or more labels than the rule.
-* Beginning with the right-most labels of both the domain and the rule, and continuing for all labels in the rule, one finds that for every pair, either they are identical, or that the label from the rule is "*".
+
+- The Public Suffix List consists of a series of lines, separated by \n.
+- Each line is only read up to the first whitespace; entire lines can also be commented using //.
+- Each line which is not entirely whitespace or begins with a comment contains a rule.
+- A rule may begin with a "!" (exclamation mark). If it does, it is labelled as a "exception rule" and then treated as if the exclamation mark is not present.
+- A domain or rule can be split into a list of labels using the separator "." (dot). The separator is not part of any of the labels. Empty labels are not permitted, meaning that leading and trailing dots are ignored.
+- A domain is said to match a rule if and only if all of the following conditions are met:
+- When the domain and rule are split into corresponding labels, that the domain contains as many or more labels than the rule.
+- Beginning with the right-most labels of both the domain and the rule, and continuing for all labels in the rule, one finds that for every pair, either they are identical, or that the label from the rule is "\*".
 
 ## Algorithm
-* Match domain against all rules and take note of the matching ones.
-* If no rules match, the prevailing rule is "*".
-* If more than one rule matches, the prevailing rule is the one which is an exception rule.
-* If there is no matching exception rule, the prevailing rule is the one with the most labels.
-* If the prevailing rule is a exception rule, modify it by removing the leftmost label.
-* The public suffix is the set of labels from the domain which match the labels of the prevailing rule, using the matching algorithm above.
-* The registered or registrable domain is the public suffix plus one additional label.
+
+- Match domain against all rules and take note of the matching ones.
+- If no rules match, the prevailing rule is "\*".
+- If more than one rule matches, the prevailing rule is the one which is an exception rule.
+- If there is no matching exception rule, the prevailing rule is the one with the most labels.
+- If the prevailing rule is a exception rule, modify it by removing the leftmost label.
+- The public suffix is the set of labels from the domain which match the labels of the prevailing rule, using the matching algorithm above.
+- The registered or registrable domain is the public suffix plus one additional label.
 
 ## Divisions
+
 The Public Suffix List is subdivided, using markers in the comments, into two sections, labelled as `ICANN` domains and `PRIVATE` domains.
 
-`ICANN` domains (_Perhaps IANA would have been a better label, but changing it may break integrations that are built_) are those delegated by ICANN or part of the IANA root zone database. The authorized registry may express further policies on how they operate the TLD, such as subdivisions within it. Updates to this section can be submitted by anyone, but if they are not an authorized representative of the registry then they will need to back up their claims of error with documentation from the registry's website or coordinate with the NIC Adminstrators to have them enter in _PSL TXT record leaf validation.
+`ICANN` domains (_Perhaps IANA would have been a better label, but changing it may break integrations that are built_) are those delegated by ICANN or part of the IANA root zone database. The authorized registry may express further policies on how they operate the TLD, such as subdivisions within it. Updates to this section can be submitted by anyone, but if they are not an authorized representative of the registry then they will need to back up their claims of error with documentation from the registry's website or coordinate with the NIC Administrators to have them enter in `_psl` TXT record leaf validation.
 
 `PRIVATE` domains are amendments submitted by the domain holder, as an expression of how they operate their domain security policy. Updates to this section are only accepted from authorized representatives of the domain registrant. This is so we can be certain they know what they are getting into.
 
